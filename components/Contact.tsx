@@ -30,8 +30,8 @@ export default function Contact() {
               Open to speaking engagements, research collaborations, and select full-time opportunities.
             </p>
             {[
-              { icon: "✉", label: "alex.morgan@email.com" },
-              { icon: "in", label: "linkedin.com/in/alexmorgan-cfa" },
+              { icon: "✉", label: "b.manasa101@gmail.com" },
+              { icon: "in", label: "https://www.linkedin.com/in/manasa-basavaraju-spjimr/" },
               { icon: "📍", label: "Mumbai, India" },
             ].map((c) => (
               <div key={c.label} style={{ display: "flex", alignItems: "center", gap: "1rem", padding: "1rem 0", borderBottom: "1px solid var(--faint)", color: "var(--muted)", fontSize: "0.88rem" }}>
