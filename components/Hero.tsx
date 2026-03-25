@@ -22,8 +22,8 @@ export default function Hero() {
               Into <em style={{ fontStyle: "normal", fontWeight: 700, color: "var(--gold)" }}>Conviction</em>
             </h1>
             <p style={{ fontSize: "1rem", color: "var(--muted)", lineHeight: 1.8, maxWidth: 480, marginBottom: "2.5rem" }}>
-              CFA Charterholder with 8 years of buy-side and sell-side experience across Technology and Consumer sectors. I build research that moves capital.
-            </p>
+ Institutional sales coverage specialist managing relationships with PMS, AIFs and insurance funds; primary  
+point of contact for investment ideas, allocations and execution support.             </p>
             <div className="flex gap-4 flex-wrap">
               <a href="#research" style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "var(--gold)", color: "#080a0f", padding: "0.75rem 2rem", borderRadius: 2, fontSize: "0.78rem", fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase" }}>
                 View Research →
