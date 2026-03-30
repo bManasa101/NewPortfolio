@@ -23,7 +23,7 @@ export default function Hero() {
               Into <em style={{ fontStyle: "normal", fontWeight: 700, color: "var(--gold)" }}>Conviction</em>
             </h1>
             <p style={{ fontSize: "1rem", color: "var(--muted)", lineHeight: 1.8, maxWidth: 480, marginBottom: "2.5rem" }}>
-              CFA Charterholder with 32 months of experience across institutional equity sales, equity research, and financial modelling. NISM Research Analyst certified.
+Sell-side meets buy-side thinking. I sit at the interface of institutional capital allocation and equity research — translating market signals into structured, high-conviction ideas.
             </p>
             <div className="flex gap-4 flex-wrap">
               <a href="#research" style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "var(--gold)", color: "#080a0f", padding: "0.75rem 2rem", borderRadius: 2, fontSize: "0.78rem", fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase" }}>
@@ -41,7 +41,7 @@ export default function Hero() {
               <div className="flex gap-1.5">
                 {["#ff5f57", "#febc2e", "#28c840"].map(c => <span key={c} style={{ width: 10, height: 10, borderRadius: "50%", background: c, display: "inline-block" }} />)}
               </div>
-              <span style={{ fontSize: "0.7rem", color: "var(--muted)", letterSpacing: "0.1em" }}>Active Coverage · FY2025</span>
+              <span style={{ fontSize: "0.7rem", color: "var(--muted)", letterSpacing: "0.1em" }}>Coverage · FY2025</span>
               <span />
             </div>
             <div style={{ padding: "1.4rem" }}>

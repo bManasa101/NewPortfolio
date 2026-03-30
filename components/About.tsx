@@ -18,7 +18,7 @@ export default function About() {
           <div style={{ background: "var(--bg2)", border: "1px solid rgba(200,169,110,0.15)", borderLeft: "3px solid var(--gold)", borderRadius: 8, padding: "2rem", position: "relative", overflow: "hidden" }}>
             <span style={{ position: "absolute", top: -10, left: 16, fontSize: "6rem", color: "rgba(200,169,110,0.08)", fontFamily: "Georgia, serif", lineHeight: 1 }}>"</span>
             <p style={{ fontSize: "1rem", lineHeight: 1.8, color: "var(--text)", fontWeight: 300, fontStyle: "italic", position: "relative" }}>
-I believe good analysis starts with the right question, not more data.            </p>
+I believe good analysis starts with the right questions, not more data.            </p>
             <div style={{ marginTop: "1rem", fontSize: "0.75rem", color: "var(--gold)", letterSpacing: "0.1em", position: "relative" }}>— Manasa Basavaraju</div>
           </div>
         </div>

@@ -38,7 +38,7 @@ export default function Navbar() {
           {/* Logo */}
           <a href="#" style={{ textDecoration: "none" }}>
             <span style={{ color: "var(--gold)", fontSize: "0.78rem", letterSpacing: "0.28em", textTransform: "uppercase", fontWeight: 500 }}>
-              Manasa B <span style={{ opacity: 0.5, margin: "0 4px" }}>·</span> CFA
+              Manasa B <span style={{ opacity: 0.5, margin: "0 4px" }}>·</span> CFA Level 2
             </span>
           </a>
 

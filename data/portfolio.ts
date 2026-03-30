@@ -36,16 +36,16 @@ export const stats = [
 ];
 
 export const coverage = [
-  { name: "Bharti Airtel",  sector: "Telecom",     rec: "Buy",  pt: "DCF Model",   chg: "5-yr Forecast", up: true },
-  { name: "Tata Tech IPO",  sector: "Technology",  rec: "Hold", pt: "IPO Analysis", chg: "Stakeholder Impact", up: false },
-  { name: "Index Deriv.",   sector: "Derivatives", rec: "Buy",  pt: "SEBI Paper",  chg: "Primary Analysis", up: true },
-  { name: "Passive Funds",  sector: "AMC/ETF",     rec: "Buy",  pt: "India Trends", chg: "US Benchmarked", up: true },
-  { name: "Infra Project",  sector: "Infrastructure", rec: "Hold", pt: "Fin. Model", chg: "Sensitivity Anal.", up: false },
+  { name: "Bharti Airtel",  sector: "Telecom",     rec: "",  pt: "DCF Model",   chg: "5-yr Forecast", up: true },
+  { name: "Tata Tech IPO",  sector: "Technology",  rec: "", pt: "IPO Analysis", chg: "Stakeholder Impact", up: false },
+  { name: "Index Deriv.",   sector: "Derivatives", rec: "",  pt: "SEBI Paper",  chg: "Primary Analysis", up: true },
+  { name: "Passive Funds",  sector: "AMC/ETF",     rec: "",  pt: "India Trends", chg: "US Benchmarked", up: true },
+  { name: "Infra Project",  sector: "Infrastructure", rec: "", pt: "Fin. Model", chg: "Sensitivity Anal.", up: false },
 ];
 
 export const experience = [
   {
-    date: "Nov 2022 – May 2023",
+    date: "May 2025 - Present",
     firm: "Axis Capital",
     title: "Institutional Sales",
     location: "Mumbai, India",
@@ -53,7 +53,7 @@ export const experience = [
     tags: ["Institutional Sales", "Block Placements", "ECM", "PMS/AIF"],
   },
   {
-    date: "2023 – 2024",
+    date: "Aug 2024 - Oct 2024",
     firm: "Axis Capital",
     title: "Corporate Autumn Intern",
     location: "Mumbai, India",
@@ -61,7 +61,7 @@ export const experience = [
     tags: ["Derivatives", "SEBI Research", "Passive Investing", "Sales"],
   },
   {
-    date: "Nov 22 to May 23",
+    date: "Nov 2022 - May 2023",
     firm: "KPMG",
     title: "Associate Consultant",
     location: "India",
@@ -69,7 +69,7 @@ export const experience = [
     tags: ["Workday ERP", "QMS", "$28M Onboarding", "Banking"],
   },
   {
-    date: "Sep 2020 – Oct 2022",
+    date: "Sept 2020-Oct 2022",
     firm: "Deloitte Consulting",
     title: "Analyst",
     location: "India",
