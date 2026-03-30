@@ -29,10 +29,10 @@ export const profile = {
 };
 
 export const stats = [
-  { value: "32 Mo",  label: "Work Experience" },
-  { value: "CFA L2", label: "Cleared First Attempt" },
-  { value: "84/100", label: "NISM Research Analyst" },
-  { value: "9.21",   label: "B.E. CGPA" },
+  { value: "CFA Candidate",  label: "L1 & L2 · First Attempt" },
+  { value: "SEBI - Licensed", label: "NISM Series XV _ research analyst cleared" },
+  { value: "Institutional Coverage", label: "4 Client Types - AIF CAT III, PMS, insurance and pension funds" },
+  { value: "Analytical Foundation",   label: "B.E. EEE · 9.21 CGPA" },
 ];
 
 export const coverage = [
@@ -61,7 +61,7 @@ export const experience = [
     tags: ["Derivatives", "SEBI Research", "Passive Investing", "Sales"],
   },
   {
-    date: "Dates on CV",
+    date: "Nov 22 to May 23",
     firm: "KPMG",
     title: "Associate Consultant",
     location: "India",

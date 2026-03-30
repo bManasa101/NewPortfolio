@@ -1,9 +1,10 @@
+// components/Hero.tsx
 import { coverage } from "@/data/portfolio";
 
 const recStyle: Record<string, React.CSSProperties> = {
-  Buy:  { background: "rgba(46,204,113,0.12)",  color: "var(--green)", border: "1px solid rgba(46,204,113,0.2)" },
-  Hold: { background: "rgba(200,169,110,0.1)",  color: "var(--gold)",  border: "1px solid rgba(200,169,110,0.2)" },
-  Sell: { background: "rgba(231,76,60,0.1)",    color: "var(--red)",   border: "1px solid rgba(231,76,60,0.2)" },
+  Buy:  { background: "rgba(46,204,113,0.12)", color: "var(--green)", border: "1px solid rgba(46,204,113,0.2)" },
+  Hold: { background: "rgba(200,169,110,0.1)", color: "var(--gold)", border: "1px solid rgba(200,169,110,0.2)" },
+  Sell: { background: "rgba(231,76,60,0.1)", color: "var(--red)", border: "1px solid rgba(231,76,60,0.2)" },
 };
 
 export default function Hero() {
@@ -15,15 +16,15 @@ export default function Hero() {
           <div>
             <div style={{ fontSize: "0.72rem", letterSpacing: "0.3em", textTransform: "uppercase", color: "var(--gold)", marginBottom: "1.5rem", display: "flex", alignItems: "center", gap: 10 }}>
               <span style={{ width: 32, height: 1, background: "var(--gold)", display: "inline-block" }} />
-              Equity Research &amp; Capital Markets
+              Equity Research &amp; Institutional Sales
             </div>
             <h1 style={{ fontSize: "clamp(3rem,6vw,5rem)", fontWeight: 200, lineHeight: 1.05, letterSpacing: "-0.03em", marginBottom: "1.5rem" }}>
               Turning Data<br />
               Into <em style={{ fontStyle: "normal", fontWeight: 700, color: "var(--gold)" }}>Conviction</em>
             </h1>
             <p style={{ fontSize: "1rem", color: "var(--muted)", lineHeight: 1.8, maxWidth: 480, marginBottom: "2.5rem" }}>
- Institutional sales coverage specialist managing relationships with PMS, AIFs and insurance funds; primary  
-point of contact for investment ideas, allocations and execution support.             </p>
+              CFA Charterholder with 32 months of experience across institutional equity sales, equity research, and financial modelling. NISM Research Analyst certified.
+            </p>
             <div className="flex gap-4 flex-wrap">
               <a href="#research" style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "var(--gold)", color: "#080a0f", padding: "0.75rem 2rem", borderRadius: 2, fontSize: "0.78rem", fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase" }}>
                 View Research →
@@ -38,7 +39,7 @@ point of contact for investment ideas, allocations and execution support.       
           <div className="hidden md:block" style={{ background: "var(--bg2)", border: "1px solid rgba(200,169,110,0.15)", borderRadius: 8, overflow: "hidden" }}>
             <div style={{ background: "var(--bg3)", padding: "1rem 1.4rem", display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: "1px solid var(--faint)" }}>
               <div className="flex gap-1.5">
-                {["#ff5f57","#febc2e","#28c840"].map(c => <span key={c} style={{ width: 10, height: 10, borderRadius: "50%", background: c, display: "inline-block" }} />)}
+                {["#ff5f57", "#febc2e", "#28c840"].map(c => <span key={c} style={{ width: 10, height: 10, borderRadius: "50%", background: c, display: "inline-block" }} />)}
               </div>
               <span style={{ fontSize: "0.7rem", color: "var(--muted)", letterSpacing: "0.1em" }}>Active Coverage · FY2025</span>
               <span />
