@@ -1,25 +1,32 @@
+// app/api/reports/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { readReports, writeReports, Report } from "@/lib/reports-store";
 
-// ✅ VALIDATION FUNCTION
+// Force dynamic — never cache this route
+export const dynamic = "force-dynamic";
+
 function validateReport(r: any): string | null {
   if (!r.slug || typeof r.slug !== "string") return "Invalid slug";
   if (!r.title) return "Title is required";
   return null;
 }
 
-// ✅ GET
+// GET all reports
 export async function GET() {
-  const reports = await readReports();
-  return NextResponse.json(reports);
+  try {
+    const reports = await readReports();
+    return NextResponse.json(reports);
+  } catch (err) {
+    console.error("GET error:", err);
+    return NextResponse.json([], { status: 200 });
+  }
 }
 
-// ✅ POST (CREATE)
+// POST — create new report
 export async function POST(req: NextRequest) {
   try {
     const report: Report = await req.json();
 
-    // 🔥 VALIDATE
     const error = validateReport(report);
     if (error) {
       return NextResponse.json({ error }, { status: 400 });
@@ -27,19 +34,13 @@ export async function POST(req: NextRequest) {
 
     const reports = await readReports();
 
-    // remove duplicate slug
+    // Remove any existing report with same slug (upsert behaviour)
     const filtered = reports.filter(r => r.slug !== report.slug);
-
-    const updated = [...filtered, report];
-
-    await writeReports(updated);
+    await writeReports([...filtered, report]);
 
     return NextResponse.json({ success: true });
   } catch (err) {
     console.error("POST error:", err);
-    return NextResponse.json(
-      { error: "Failed to save report" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to save report" }, { status: 500 });
   }
 }

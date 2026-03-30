@@ -1,5 +1,5 @@
 // lib/reports-store.ts
-import { put, list } from "@vercel/blob";
+import { put, head } from "@vercel/blob";
 
 export type SupportingFile = {
   name: string;
@@ -31,8 +31,20 @@ export type Report = {
 
 const BLOB_NAME = "reports.json";
 
-// ── Sanitise incoming data ────────────────────────────────────────────────────
+// ── Sanitise a single report — handles any old or new format ─────────────────
 function sanitizeReport(r: any): Report {
+  // keyFinancials: handle both old {label,value} objects and new "Label: Value" strings
+  let keyFinancials: string[] = [];
+  if (Array.isArray(r?.detail?.keyFinancials)) {
+    keyFinancials = r.detail.keyFinancials.map((item: any) => {
+      if (typeof item === "string") return item;
+      if (item && typeof item === "object" && item.label !== undefined) {
+        return `${item.label}: ${item.value}`;
+      }
+      return String(item);
+    });
+  }
+
   return {
     slug:    r?.slug    || "",
     ticker:  r?.ticker  || "",
@@ -44,10 +56,17 @@ function sanitizeReport(r: any): Report {
     excerpt: r?.excerpt || "",
     date:    r?.date    || "",
     detail: {
-      thesis:         r?.detail?.thesis       || "",
-      keyFinancials:  Array.isArray(r?.detail?.keyFinancials) ? r.detail.keyFinancials.map(String) : [],
-      risks:          Array.isArray(r?.detail?.risks)          ? r.detail.risks.map(String)         : [],
-      conclusion:     r?.detail?.conclusion   || "",
+      thesis:        r?.detail?.thesis     || "",
+      keyFinancials,
+      risks: Array.isArray(r?.detail?.risks)
+        ? r.detail.risks.map((item: any) =>
+            typeof item === "string" ? item
+            : item && typeof item === "object" && item.label
+              ? `${item.label}: ${item.value}`
+              : String(item)
+          )
+        : [],
+      conclusion: r?.detail?.conclusion || "",
     },
     supportingFiles: Array.isArray(r?.supportingFiles)
       ? r.supportingFiles.map((f: any) => ({
@@ -60,40 +79,67 @@ function sanitizeReport(r: any): Report {
   };
 }
 
-// ── Blob helpers ──────────────────────────────────────────────────────────────
+// ── Detect stale blob format (old schema) ────────────────────────────────────
+function needsMigration(raw: any[]): boolean {
+  if (raw.length === 0) return false;
+  const first = raw[0];
+  return (
+    !Array.isArray(first?.tags) ||
+    first?.excerpt === undefined ||
+    (Array.isArray(first?.detail?.keyFinancials) &&
+      first.detail.keyFinancials.length > 0 &&
+      typeof first.detail.keyFinancials[0] === "object")
+  );
+}
+
+// ── Get blob URL via head() — always fresh, never stale ──────────────────────
 async function getBlobUrl(): Promise<string | null> {
   try {
-    const blobs = await list();
-    const file = blobs.blobs.find(b => b.pathname === BLOB_NAME);
-    return file?.url || null;
+    const result = await head(BLOB_NAME);
+    return result.url;
   } catch {
     return null;
   }
 }
 
-// ── Read ──────────────────────────────────────────────────────────────────────
+// ── Write ─────────────────────────────────────────────────────────────────────
+export async function writeReports(reports: Report[]): Promise<void> {
+  await put(BLOB_NAME, JSON.stringify(reports, null, 2), {
+    access: "public",
+    contentType: "application/json",
+    addRandomSuffix: false,
+    allowOverwrite: true,
+  });
+}
+
+// ── Read — with auto-migration of stale blob data ────────────────────────────
 export async function readReports(): Promise<Report[]> {
   try {
     const url = await getBlobUrl();
     if (!url) return [];
 
-    const res = await fetch(url, { cache: "no-store" });
+    const res = await fetch(url, {
+      cache: "no-store",
+      headers: { "Cache-Control": "no-cache" },
+    });
     if (!res.ok) return [];
 
-    const data = await res.json();
-    if (!Array.isArray(data)) return [];
+    const raw = await res.json();
+    if (!Array.isArray(raw)) return [];
 
-    return data.map(sanitizeReport);
-  } catch {
+    const sanitized = raw.map(sanitizeReport);
+
+    // Auto-migrate: rewrite blob immediately if old format detected
+    if (needsMigration(raw)) {
+      console.log("reports-store: migrating stale blob to new schema");
+      writeReports(sanitized).catch(e =>
+        console.error("reports-store: migration write failed:", e)
+      );
+    }
+
+    return sanitized;
+  } catch (err) {
+    console.error("readReports error:", err);
     return [];
   }
-}
-
-// ── Write ─────────────────────────────────────────────────────────────────────
-export async function writeReports(reports: Report[]) {
-  await put(BLOB_NAME, JSON.stringify(reports, null, 2), {
-    access: "public",
-    contentType: "application/json",
-    addRandomSuffix: false,
-  });
 }
