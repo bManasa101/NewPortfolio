@@ -1,4 +1,3 @@
-// components/ReportForm.tsx
 "use client";
 import { useState, useRef } from "react";
 import { type Report, type SupportingFile } from "@/lib/reports-store";
@@ -39,20 +38,23 @@ const inp: React.CSSProperties = {
   boxSizing: "border-box",
 };
 
+// ── Props — onSave accepts both sync and async handlers ──────────────────────
 export function ReportForm({
   initial,
+  saving = false,
   onSave,
   onCancel,
 }: {
   initial: Report | null;
-  onSave: (r: Report) => void;
+  saving?: boolean;
+  onSave: (r: Report) => void | Promise<void>;
   onCancel: () => void;
 }) {
   const [form, setForm] = useState<Report>(initial ?? emptyReport);
   const [uploading, setUploading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  // ── Field helpers ────────────────────────────────────────
+  // ── Field helpers ──────────────────────────────────────────────────────────
   const set = (path: string, val: unknown) => {
     setForm((prev) => {
       const next = structuredClone(prev);
@@ -66,16 +68,17 @@ export function ReportForm({
     });
   };
 
-  // ── Key financials (label/value pairs stored as "Label: Value" strings) ──
-  // We keep them internally as {label, value} display rows but store as strings
-  // for API compatibility. We use a local kfRows state for the UI.
+  // ── Key financials ─────────────────────────────────────────────────────────
   const [kfRows, setKfRows] = useState<{ label: string; value: string }[]>(() => {
     const kf = form.detail.keyFinancials;
     if (!kf || kf.length === 0) return [{ label: "", value: "" }];
     return kf.map((item) => {
       if (typeof item === "string") {
-        const [label, ...rest] = item.split(":");
-        return { label: label?.trim() || "", value: rest.join(":").trim() };
+        const colonIdx = item.indexOf(":");
+        if (colonIdx !== -1) {
+          return { label: item.slice(0, colonIdx).trim(), value: item.slice(colonIdx + 1).trim() };
+        }
+        return { label: item, value: "" };
       }
       return item as { label: string; value: string };
     });
@@ -86,7 +89,7 @@ export function ReportForm({
     set("detail.keyFinancials", rows.map((r) => `${r.label}: ${r.value}`));
   };
 
-  // ── Risks ────────────────────────────────────────────────
+  // ── Risks ──────────────────────────────────────────────────────────────────
   const [risks, setRisks] = useState<string[]>(() =>
     form.detail.risks.length > 0 ? form.detail.risks : [""]
   );
@@ -96,7 +99,7 @@ export function ReportForm({
     set("detail.risks", next);
   };
 
-  // ── File upload to Vercel Blob ───────────────────────────
+  // ── File upload ────────────────────────────────────────────────────────────
   async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -132,7 +135,7 @@ export function ReportForm({
     }));
   }
 
-  // ── Save ─────────────────────────────────────────────────
+  // ── Save ───────────────────────────────────────────────────────────────────
   const handleSave = () => {
     if (!form.title.trim() || !form.ticker.trim()) {
       alert("Title and ticker are required.");
@@ -141,6 +144,7 @@ export function ReportForm({
     onSave({ ...form, slug: form.slug || slugify(form.title) });
   };
 
+  // ── Render ─────────────────────────────────────────────────────────────────
   return (
     <div style={{ minHeight: "100vh", background: "#080a0f", fontFamily: "'Segoe UI',system-ui,sans-serif", color: "#f0f2f5" }}>
       <div style={{ position: "fixed", inset: 0, backgroundImage: "linear-gradient(rgba(200,169,110,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(200,169,110,0.03) 1px,transparent 1px)", backgroundSize: "60px 60px", pointerEvents: "none", zIndex: 0 }} />
@@ -150,7 +154,9 @@ export function ReportForm({
           {initial ? "Edit Report" : "New Report"}
         </div>
         <h1 style={{ fontSize: "1.8rem", fontWeight: 300, marginBottom: "3rem" }}>
-          {initial ? <><strong style={{ fontWeight: 600 }}>Edit</strong> Report</> : <>Add <strong style={{ fontWeight: 600 }}>New</strong> Report</>}
+          {initial
+            ? <><strong style={{ fontWeight: 600 }}>Edit</strong> Report</>
+            : <>Add <strong style={{ fontWeight: 600 }}>New</strong> Report</>}
         </h1>
 
         {/* ── Basic Info ── */}
@@ -198,16 +204,35 @@ export function ReportForm({
 
         {/* ── Investment Thesis ── */}
         <FormSection title="Investment Thesis">
-          <textarea value={form.detail.thesis} onChange={e => set("detail.thesis", e.target.value)} rows={5} style={{ ...inp, resize: "vertical" }} placeholder="Full thesis narrative…" />
+          <textarea
+            value={form.detail.thesis}
+            onChange={e => set("detail.thesis", e.target.value)}
+            rows={5}
+            style={{ ...inp, resize: "vertical" }}
+            placeholder="Full thesis narrative…"
+          />
         </FormSection>
 
         {/* ── Key Financials ── */}
         <FormSection title="Key Financials">
           {kfRows.map((kf, i) => (
             <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 1fr auto", gap: "0.75rem", marginBottom: "0.75rem", alignItems: "center" }}>
-              <input value={kf.label} onChange={e => updateKfRows(kfRows.map((r, j) => j === i ? { ...r, label: e.target.value } : r))} style={inp} placeholder="Label (e.g. WACC)" />
-              <input value={kf.value} onChange={e => updateKfRows(kfRows.map((r, j) => j === i ? { ...r, value: e.target.value } : r))} style={inp} placeholder="Value (e.g. 11.2%)" />
-              <button onClick={() => updateKfRows(kfRows.filter((_, j) => j !== i))} style={{ background: "none", border: "1px solid rgba(231,76,60,0.3)", color: "#e74c3c", width: 34, height: 34, borderRadius: 4, cursor: "pointer", fontSize: "1rem", display: "flex", alignItems: "center", justifyContent: "center" }}>×</button>
+              <input
+                value={kf.label}
+                onChange={e => updateKfRows(kfRows.map((r, j) => j === i ? { ...r, label: e.target.value } : r))}
+                style={inp}
+                placeholder="Label (e.g. WACC)"
+              />
+              <input
+                value={kf.value}
+                onChange={e => updateKfRows(kfRows.map((r, j) => j === i ? { ...r, value: e.target.value } : r))}
+                style={inp}
+                placeholder="Value (e.g. 11.2%)"
+              />
+              <button
+                onClick={() => updateKfRows(kfRows.filter((_, j) => j !== i))}
+                style={{ background: "none", border: "1px solid rgba(231,76,60,0.3)", color: "#e74c3c", width: 34, height: 34, borderRadius: 4, cursor: "pointer", fontSize: "1rem", display: "flex", alignItems: "center", justifyContent: "center" }}
+              >×</button>
             </div>
           ))}
           <AddBtn onClick={() => updateKfRows([...kfRows, { label: "", value: "" }])}>+ Add Row</AddBtn>
@@ -217,8 +242,16 @@ export function ReportForm({
         <FormSection title="Key Risks">
           {risks.map((r, i) => (
             <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: "0.75rem", marginBottom: "0.75rem", alignItems: "center" }}>
-              <input value={r} onChange={e => updateRisks(risks.map((v, j) => j === i ? e.target.value : v))} style={inp} placeholder="Risk factor…" />
-              <button onClick={() => updateRisks(risks.filter((_, j) => j !== i))} style={{ background: "none", border: "1px solid rgba(231,76,60,0.3)", color: "#e74c3c", width: 34, height: 34, borderRadius: 4, cursor: "pointer", fontSize: "1rem", display: "flex", alignItems: "center", justifyContent: "center" }}>×</button>
+              <input
+                value={r}
+                onChange={e => updateRisks(risks.map((v, j) => j === i ? e.target.value : v))}
+                style={inp}
+                placeholder="Risk factor…"
+              />
+              <button
+                onClick={() => updateRisks(risks.filter((_, j) => j !== i))}
+                style={{ background: "none", border: "1px solid rgba(231,76,60,0.3)", color: "#e74c3c", width: 34, height: 34, borderRadius: 4, cursor: "pointer", fontSize: "1rem", display: "flex", alignItems: "center", justifyContent: "center" }}
+              >×</button>
             </div>
           ))}
           <AddBtn onClick={() => updateRisks([...risks, ""])}>+ Add Risk</AddBtn>
@@ -226,16 +259,21 @@ export function ReportForm({
 
         {/* ── Conclusion ── */}
         <FormSection title="Conclusion">
-          <textarea value={form.detail.conclusion} onChange={e => set("detail.conclusion", e.target.value)} rows={4} style={{ ...inp, resize: "vertical" }} placeholder="Conclusion and final recommendation…" />
+          <textarea
+            value={form.detail.conclusion}
+            onChange={e => set("detail.conclusion", e.target.value)}
+            rows={4}
+            style={{ ...inp, resize: "vertical" }}
+            placeholder="Conclusion and final recommendation…"
+          />
         </FormSection>
 
         {/* ── Supporting Files ── */}
         <FormSection title="Supporting Files">
           <p style={{ fontSize: "0.8rem", color: "#7a8499", marginBottom: "1rem", lineHeight: 1.6 }}>
-            Upload PDFs, Excel, PowerPoint, or images. Files are stored in Vercel Blob and will be available for download on the report page.
+            Upload PDFs, Excel, PowerPoint, or images. Files are stored in Vercel Blob and available for download on the report page.
           </p>
 
-          {/* Existing files */}
           {(form.supportingFiles || []).length > 0 && (
             <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginBottom: "1rem" }}>
               {(form.supportingFiles || []).map((f, i) => (
@@ -248,15 +286,21 @@ export function ReportForm({
                     </div>
                   </div>
                   <div style={{ display: "flex", gap: "0.5rem" }}>
-                    <a href={f.url} target="_blank" rel="noopener noreferrer" style={{ background: "none", border: "1px solid #3a4258", color: "#7a8499", padding: "0.25rem 0.7rem", borderRadius: 2, fontSize: "0.72rem", cursor: "pointer", textDecoration: "none" }}>View</a>
-                    <button onClick={() => removeFile(i)} style={{ background: "none", border: "1px solid rgba(231,76,60,0.3)", color: "#e74c3c", padding: "0.25rem 0.7rem", borderRadius: 2, fontSize: "0.72rem", cursor: "pointer", fontFamily: "inherit" }}>Remove</button>
+                    <a href={f.url} target="_blank" rel="noopener noreferrer" style={{ background: "none", border: "1px solid #3a4258", color: "#7a8499", padding: "0.25rem 0.7rem", borderRadius: 2, fontSize: "0.72rem", cursor: "pointer", textDecoration: "none" }}>
+                      View
+                    </a>
+                    <button
+                      onClick={() => removeFile(i)}
+                      style={{ background: "none", border: "1px solid rgba(231,76,60,0.3)", color: "#e74c3c", padding: "0.25rem 0.7rem", borderRadius: 2, fontSize: "0.72rem", cursor: "pointer", fontFamily: "inherit" }}
+                    >
+                      Remove
+                    </button>
                   </div>
                 </div>
               ))}
             </div>
           )}
 
-          {/* Upload button */}
           <input
             ref={fileRef}
             type="file"
@@ -269,10 +313,11 @@ export function ReportForm({
             htmlFor="file-upload"
             style={{
               display: "inline-flex", alignItems: "center", gap: "0.5rem",
-              background: "none", border: "1px dashed #3a4258", color: uploading ? "#7a8499" : "#c8a96e",
-              padding: "0.65rem 1.4rem", borderRadius: 4, cursor: uploading ? "not-allowed" : "pointer",
+              background: "none", border: "1px dashed #3a4258",
+              color: uploading ? "#7a8499" : "#c8a96e",
+              padding: "0.65rem 1.4rem", borderRadius: 4,
+              cursor: uploading ? "not-allowed" : "pointer",
               fontSize: "0.78rem", fontFamily: "inherit", letterSpacing: "0.1em",
-              transition: "border-color 0.2s",
             }}
           >
             {uploading ? "Uploading…" : "+ Upload File"}
@@ -286,13 +331,43 @@ export function ReportForm({
         <div style={{ display: "flex", gap: "1rem", marginTop: "1rem" }}>
           <button
             onClick={handleSave}
-            style={{ background: "#c8a96e", color: "#080a0f", border: "none", padding: "0.85rem 2.5rem", borderRadius: 4, fontFamily: "inherit", fontWeight: 700, fontSize: "0.8rem", letterSpacing: "0.15em", textTransform: "uppercase", cursor: "pointer" }}
+            disabled={saving || uploading}
+            style={{
+              background: saving ? "#8a7040" : "#c8a96e",
+              color: "#080a0f",
+              border: "none",
+              padding: "0.85rem 2.5rem",
+              borderRadius: 4,
+              fontFamily: "inherit",
+              fontWeight: 700,
+              fontSize: "0.8rem",
+              letterSpacing: "0.15em",
+              textTransform: "uppercase",
+              cursor: saving || uploading ? "not-allowed" : "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.6rem",
+              opacity: saving || uploading ? 0.75 : 1,
+              transition: "opacity 0.2s",
+            }}
           >
-            {initial ? "Save Changes" : "Publish Report"}
+            {saving && (
+              <span style={{
+                display: "inline-block", width: 14, height: 14,
+                border: "1.5px solid rgba(0,0,0,0.3)", borderTopColor: "#080a0f",
+                borderRadius: "50%", animation: "spin 0.7s linear infinite",
+              }} />
+            )}
+            {saving ? "Saving…" : initial ? "Save Changes" : "Publish Report"}
           </button>
           <button
             onClick={onCancel}
-            style={{ background: "none", border: "1px solid #3a4258", color: "#7a8499", padding: "0.85rem 2rem", borderRadius: 4, fontFamily: "inherit", fontSize: "0.8rem", cursor: "pointer", letterSpacing: "0.1em" }}
+            disabled={saving}
+            style={{
+              background: "none", border: "1px solid #3a4258", color: "#7a8499",
+              padding: "0.85rem 2rem", borderRadius: 4, fontFamily: "inherit",
+              fontSize: "0.8rem", cursor: saving ? "not-allowed" : "pointer", letterSpacing: "0.1em",
+            }}
           >
             Cancel
           </button>
@@ -322,7 +397,9 @@ function FormSection({ title, children }: { title: string; children: React.React
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <label style={{ display: "block", fontSize: "0.68rem", letterSpacing: "0.15em", textTransform: "uppercase", color: "#7a8499", marginBottom: "0.5rem" }}>{label}</label>
+      <label style={{ display: "block", fontSize: "0.68rem", letterSpacing: "0.15em", textTransform: "uppercase", color: "#7a8499", marginBottom: "0.5rem" }}>
+        {label}
+      </label>
       {children}
     </div>
   );
@@ -339,11 +416,11 @@ function AddBtn({ onClick, children }: { onClick: () => void; children: React.Re
   );
 }
 
-// ── Helpers ──────────────────────────────────────────────────────────────────
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
 function fileIcon(name: string): string {
   const ext = name.split(".").pop()?.toLowerCase() || "";
-  if (["pdf"].includes(ext)) return "📄";
+  if (ext === "pdf") return "📄";
   if (["xlsx", "xls", "csv"].includes(ext)) return "📊";
   if (["ppt", "pptx"].includes(ext)) return "📋";
   if (["doc", "docx"].includes(ext)) return "📝";

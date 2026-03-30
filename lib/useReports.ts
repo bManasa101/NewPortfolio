@@ -1,16 +1,18 @@
-// lib/useReports.ts
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Report } from "@/lib/reports-store";
+
+const PROPAGATION_DELAY_MS = 600;
 
 export function useReports() {
   const [reports, setReports] = useState<Report[]>([]);
   const [ready, setReady] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  async function load() {
+  const load = useCallback(async () => {
+    setLoading(true);
     try {
-      // Cache-bust with timestamp so browser never serves a stale response
       const res = await fetch(`/api/reports?t=${Date.now()}`, {
         cache: "no-store",
       });
@@ -22,12 +24,13 @@ export function useReports() {
       setReports([]);
     } finally {
       setReady(true);
+      setLoading(false);
     }
-  }
+  }, []);
 
   useEffect(() => {
     load();
-  }, []);
+  }, [load]);
 
   async function addReport(r: Report) {
     try {
@@ -41,11 +44,13 @@ export function useReports() {
         const err = await res.json();
         throw new Error(err.error || "Failed to add report");
       }
+      await new Promise(resolve => setTimeout(resolve, PROPAGATION_DELAY_MS));
+      await load();
     } catch (err) {
       console.error("addReport error:", err);
       alert(err instanceof Error ? err.message : "Failed to save report");
+      throw err;
     }
-    await load();
   }
 
   async function updateReport(slug: string, r: Report) {
@@ -60,11 +65,13 @@ export function useReports() {
         const err = await res.json();
         throw new Error(err.error || "Failed to update report");
       }
+      await new Promise(resolve => setTimeout(resolve, PROPAGATION_DELAY_MS));
+      await load();
     } catch (err) {
       console.error("updateReport error:", err);
       alert(err instanceof Error ? err.message : "Failed to update report");
+      throw err;
     }
-    await load();
   }
 
   async function deleteReport(slug: string) {
@@ -77,12 +84,14 @@ export function useReports() {
         const err = await res.json();
         throw new Error(err.error || "Failed to delete report");
       }
+      await new Promise(resolve => setTimeout(resolve, PROPAGATION_DELAY_MS));
+      await load();
     } catch (err) {
       console.error("deleteReport error:", err);
       alert(err instanceof Error ? err.message : "Failed to delete report");
+      throw err;
     }
-    await load();
   }
 
-  return { reports, ready, addReport, updateReport, deleteReport };
+  return { reports, ready, loading, addReport, updateReport, deleteReport };
 }

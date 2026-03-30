@@ -1,4 +1,3 @@
-// lib/reports-store.ts
 import { put, head } from "@vercel/blob";
 
 export type SupportingFile = {
@@ -31,9 +30,7 @@ export type Report = {
 
 const BLOB_NAME = "reports.json";
 
-// ── Sanitise a single report — handles any old or new format ─────────────────
 function sanitizeReport(r: any): Report {
-  // keyFinancials: handle both old {label,value} objects and new "Label: Value" strings
   let keyFinancials: string[] = [];
   if (Array.isArray(r?.detail?.keyFinancials)) {
     keyFinancials = r.detail.keyFinancials.map((item: any) => {
@@ -79,7 +76,6 @@ function sanitizeReport(r: any): Report {
   };
 }
 
-// ── Detect stale blob format (old schema) ────────────────────────────────────
 function needsMigration(raw: any[]): boolean {
   if (raw.length === 0) return false;
   const first = raw[0];
@@ -92,7 +88,6 @@ function needsMigration(raw: any[]): boolean {
   );
 }
 
-// ── Get blob URL via head() — always fresh, never stale ──────────────────────
 async function getBlobUrl(): Promise<string | null> {
   try {
     const result = await head(BLOB_NAME);
@@ -102,7 +97,6 @@ async function getBlobUrl(): Promise<string | null> {
   }
 }
 
-// ── Write ─────────────────────────────────────────────────────────────────────
 export async function writeReports(reports: Report[]): Promise<void> {
   await put(BLOB_NAME, JSON.stringify(reports, null, 2), {
     access: "public",
@@ -112,15 +106,17 @@ export async function writeReports(reports: Report[]): Promise<void> {
   });
 }
 
-// ── Read — with auto-migration of stale blob data ────────────────────────────
 export async function readReports(): Promise<Report[]> {
   try {
     const url = await getBlobUrl();
     if (!url) return [];
 
-    const res = await fetch(url, {
+    // ✅ FIX: Append cache-buster so Vercel CDN never serves stale blob content
+    const cacheBustedUrl = `${url}?t=${Date.now()}`;
+
+    const res = await fetch(cacheBustedUrl, {
       cache: "no-store",
-      headers: { "Cache-Control": "no-cache" },
+      headers: { "Cache-Control": "no-cache, no-store, must-revalidate" },
     });
     if (!res.ok) return [];
 
@@ -129,7 +125,6 @@ export async function readReports(): Promise<Report[]> {
 
     const sanitized = raw.map(sanitizeReport);
 
-    // Auto-migrate: rewrite blob immediately if old format detected
     if (needsMigration(raw)) {
       console.log("reports-store: migrating stale blob to new schema");
       writeReports(sanitized).catch(e =>
