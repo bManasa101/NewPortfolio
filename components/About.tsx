@@ -17,10 +17,35 @@ export default function About() {
           </div>
           <div style={{ background: "var(--bg2)", border: "1px solid rgba(200,169,110,0.15)", borderLeft: "3px solid var(--gold)", borderRadius: 8, padding: "2rem", position: "relative", overflow: "hidden" }}>
             <span style={{ position: "absolute", top: -10, left: 16, fontSize: "6rem", color: "rgba(200,169,110,0.08)", fontFamily: "Georgia, serif", lineHeight: 1 }}>"</span>
+                        <p style={{ fontSize: "1rem", lineHeight: 1.8, color: "var(--text)", fontWeight: 700, position: "relative" }}>
+Thinking About
+</p>
+<br></br>
+<p style={{ fontSize: "1rem", lineHeight: 1.8, color: "var(--text)", fontWeight: 300, position: "relative" }}>
+Currently reading: One up of wall street/Beating the street by peter lynch.
+</p>
+<p style={{ fontSize: "1rem", lineHeight: 1.8, color: "var(--text)", fontWeight: 300, position: "relative" }}>
+Macro Views - .........
+</p>
+<p style={{ fontSize: "1rem", lineHeight: 1.8, color: "var(--text)", fontWeight: 300, position: "relative" }}>
+Tracking: India Financial Sector
+</p>
+<p style={{ fontSize: "1rem", lineHeight: 1.8, color: "var(--text)", fontWeight: 300, position: "relative" }}>
+Thesis in progress: Banks — HDFC model expected soon
+</p>
+<p style={{ fontSize: "1rem", lineHeight: 1.8, color: "var(--text)", fontWeight: 300, position: "relative" }}>
+Weekly Note - ..............................</p>
+<br></br>
+<br></br>
+<br></br>
+
             <p style={{ fontSize: "1rem", lineHeight: 1.8, color: "var(--text)", fontWeight: 300, fontStyle: "italic", position: "relative" }}>
 I believe good analysis starts with the right questions, not more data.            </p>
             <div style={{ marginTop: "1rem", fontSize: "0.75rem", color: "var(--gold)", letterSpacing: "0.1em", position: "relative" }}>— Manasa Basavaraju</div>
+          
           </div>
+          
+         
         </div>
       </div>
     </section>
