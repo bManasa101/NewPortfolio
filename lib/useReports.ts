@@ -1,36 +1,61 @@
-// lib/useReports.ts
-"use client";
-import { useState, useEffect } from "react";
-import { type Report, defaultReports } from "./reports-store";
-
-const STORAGE_KEY = "manasa_reports";
+import { useEffect, useState } from "react";
+import { Report } from "./reports-store";
 
 export function useReports() {
   const [reports, setReports] = useState<Report[]>([]);
   const [ready, setReady] = useState(false);
 
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      setReports(saved ? JSON.parse(saved) : defaultReports);
-    } catch {
-      setReports(defaultReports);
+  async function load() {
+  try {
+    const res = await fetch("/api/reports");
+
+    if (!res.ok) {
+      throw new Error("API failed");
     }
+
+    const text = await res.text();
+
+    if (!text) {
+      console.warn("API returned empty body");
+      setReports([]);
+      setReady(true);
+      return;
+    }
+
+    const data = JSON.parse(text);
+    setReports(data);
+  } catch (err) {
+    console.error("Failed to load reports:", err);
+    setReports([]);
+  } finally {
     setReady(true);
-  }, []);
+  }
+}
 
-  const persist = (next: Report[]) => {
-    setReports(next);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-  };
+  useEffect(() => { load(); }, []);
 
-  const addReport = (r: Report) => persist([...reports, r]);
+  async function addReport(r: Report) {
+    await fetch("/api/reports", {
+      method: "POST",
+      body: JSON.stringify(r),
+    });
+    load();
+  }
 
-  const updateReport = (slug: string, r: Report) =>
-    persist(reports.map((x) => (x.slug === slug ? r : x)));
+  async function updateReport(slug: string, r: Report) {
+    await fetch(`/api/reports/${slug}`, {
+      method: "PUT",
+      body: JSON.stringify(r),
+    });
+    load();
+  }
 
-  const deleteReport = (slug: string) =>
-    persist(reports.filter((x) => x.slug !== slug));
+  async function deleteReport(slug: string) {
+    await fetch(`/api/reports/${slug}`, {
+      method: "DELETE",
+    });
+    load();
+  }
 
   return { reports, ready, addReport, updateReport, deleteReport };
 }

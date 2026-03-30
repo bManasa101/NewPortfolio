@@ -18,14 +18,13 @@ export default function ReportPage() {
   const [report, setReport] = useState<Report | null>(null);
 
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      const all: Report[] = saved ? JSON.parse(saved) : defaultReports;
-      setReport(all.find((r) => r.slug === slug) ?? null);
-    } catch {
-      setReport(defaultReports.find((r) => r.slug === slug) ?? null);
-    }
-  }, [slug]);
+  async function load() {
+    const res = await fetch("/api/reports");
+    const all = await res.json();
+    setReport(all.find((r: Report) => r.slug === slug) ?? null);
+  }
+  load();
+}, [slug]);
 
   if (!report) return (
     <div style={{ minHeight: "100vh", background: "#080a0f", display: "flex", alignItems: "center", justifyContent: "center", color: "#7a8499" }}>
