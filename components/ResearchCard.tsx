@@ -22,31 +22,37 @@ export function ResearchCard({ r }: { r: Report }) {
         cursor: "pointer",
         display: "flex",
         flexDirection: "column",
-        gap: 0,
+        position: "relative",
+        overflow: "hidden",
       }}
       onClick={() => router.push(`/research/${r.slug}`)}
-      onMouseEnter={(e) => {
+      onMouseEnter={e => {
         e.currentTarget.style.borderColor = "rgba(200,169,110,0.3)";
         e.currentTarget.style.transform = "translateY(-2px)";
         e.currentTarget.style.boxShadow = "0 8px 32px rgba(0,0,0,0.3)";
       }}
-      onMouseLeave={(e) => {
+      onMouseLeave={e => {
         e.currentTarget.style.borderColor = "var(--faint)";
         e.currentTarget.style.transform = "none";
         e.currentTarget.style.boxShadow = "none";
       }}
     >
       {/* Top accent bar */}
-      <div style={{ height: 2, background: "linear-gradient(90deg, var(--gold), transparent)", borderRadius: 2, marginBottom: "1.4rem", marginLeft: "-1.8rem", marginRight: "-1.8rem", marginTop: "-1.8rem", borderTopLeftRadius: 6, borderTopRightRadius: 6 }} />
+      <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: "linear-gradient(90deg, var(--gold), transparent)" }} />
 
-      {/* Badges row */}
-      <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: "1rem", flexWrap: "wrap" }}>
+      {/* Badges */}
+      <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: "1rem", flexWrap: "wrap", marginTop: "0.2rem" }}>
         <span style={{ fontSize: "0.65rem", padding: "2px 9px", borderRadius: 2, background: "var(--bg3)", border: "1px solid var(--faint)", color: "var(--muted)", letterSpacing: "0.1em", textTransform: "uppercase" }}>
           {r.sector}
         </span>
         {r.rec && (
           <span style={{ fontSize: "0.65rem", padding: "2px 9px", borderRadius: 2, letterSpacing: "0.08em", textTransform: "uppercase", fontWeight: 600, ...recStyle[r.rec] }}>
             {r.rec}
+          </span>
+        )}
+        {(r.supportingFiles?.length ?? 0) > 0 && (
+          <span style={{ fontSize: "0.65rem", padding: "2px 9px", borderRadius: 2, background: "rgba(200,169,110,0.06)", border: "1px solid rgba(200,169,110,0.15)", color: "#c8a96e", letterSpacing: "0.08em" }}>
+            {r.supportingFiles!.length} file{r.supportingFiles!.length > 1 ? "s" : ""}
           </span>
         )}
       </div>
@@ -70,8 +76,7 @@ export function ResearchCard({ r }: { r: Report }) {
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: "1.2rem", borderTop: "1px solid var(--faint)" }}>
         <span style={{ fontSize: "0.72rem", color: "var(--muted)", letterSpacing: "0.04em" }}>{r.date}</span>
         <span style={{ fontSize: "0.72rem", color: "var(--gold)", letterSpacing: "0.1em", textTransform: "uppercase", display: "flex", alignItems: "center", gap: 4 }}>
-          Read Report
-          <span style={{ fontSize: "0.9rem" }}>→</span>
+          Read Report →
         </span>
       </div>
     </div>

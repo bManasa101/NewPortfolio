@@ -1,23 +1,45 @@
-import { NextResponse } from "next/server";
-import { getReports, addReport } from "@/lib/reports-db";
+import { NextRequest, NextResponse } from "next/server";
+import { readReports, writeReports, Report } from "@/lib/reports-store";
 
-export async function GET() {
-  try {
-    const reports = await getReports();
-    return NextResponse.json(reports);
-  } catch (err) {
-    console.error(err);
-    return NextResponse.json({ error: "Failed to load reports" }, { status: 500 });
-  }
+// ✅ VALIDATION FUNCTION
+function validateReport(r: any): string | null {
+  if (!r.slug || typeof r.slug !== "string") return "Invalid slug";
+  if (!r.title) return "Title is required";
+  return null;
 }
 
-export async function POST(req: Request) {
+// ✅ GET
+export async function GET() {
+  const reports = await readReports();
+  return NextResponse.json(reports);
+}
+
+// ✅ POST (CREATE)
+export async function POST(req: NextRequest) {
   try {
-    const report = await req.json();
-    await addReport(report);
-    return NextResponse.json({ ok: true });
+    const report: Report = await req.json();
+
+    // 🔥 VALIDATE
+    const error = validateReport(report);
+    if (error) {
+      return NextResponse.json({ error }, { status: 400 });
+    }
+
+    const reports = await readReports();
+
+    // remove duplicate slug
+    const filtered = reports.filter(r => r.slug !== report.slug);
+
+    const updated = [...filtered, report];
+
+    await writeReports(updated);
+
+    return NextResponse.json({ success: true });
   } catch (err) {
-    console.error(err);
-    return NextResponse.json({ error: "Failed to add report" }, { status: 500 });
+    console.error("POST error:", err);
+    return NextResponse.json(
+      { error: "Failed to save report" },
+      { status: 500 }
+    );
   }
 }

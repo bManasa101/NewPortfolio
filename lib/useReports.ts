@@ -1,60 +1,49 @@
+"use client";
+
 import { useEffect, useState } from "react";
-import { Report } from "./reports-store";
+import { Report } from "@/lib/reports-store";
 
 export function useReports() {
   const [reports, setReports] = useState<Report[]>([]);
   const [ready, setReady] = useState(false);
 
   async function load() {
-  try {
-    const res = await fetch("/api/reports");
-
-    if (!res.ok) {
-      throw new Error("API failed");
-    }
-
-    const text = await res.text();
-
-    if (!text) {
-      console.warn("API returned empty body");
+    try {
+      const res = await fetch("/api/reports", { cache: "no-store" });
+      const data = await res.json();
+      setReports(Array.isArray(data) ? data : []);
+    } catch {
       setReports([]);
+    } finally {
       setReady(true);
-      return;
     }
-
-    const data = JSON.parse(text);
-    setReports(data);
-  } catch (err) {
-    console.error("Failed to load reports:", err);
-    setReports([]);
-  } finally {
-    setReady(true);
   }
-}
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+  }, []);
 
   async function addReport(r: Report) {
     await fetch("/api/reports", {
       method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(r),
     });
-    load();
+    await load();
   }
 
   async function updateReport(slug: string, r: Report) {
     await fetch(`/api/reports/${slug}`, {
       method: "PUT",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(r),
     });
-    load();
+    await load();
   }
 
   async function deleteReport(slug: string) {
-    await fetch(`/api/reports/${slug}`, {
-      method: "DELETE",
-    });
-    load();
+    await fetch(`/api/reports/${slug}`, { method: "DELETE" });
+    await load();
   }
 
   return { reports, ready, addReport, updateReport, deleteReport };
