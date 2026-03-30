@@ -22,7 +22,7 @@ export default function Hero() {
               Turning Data<br />
               Into <em style={{ fontStyle: "normal", fontWeight: 700, color: "var(--gold)" }}>Conviction</em>
             </h1>
-            <p style={{ fontSize: "1rem", fontWeight:'700', color: "var(--muted)", lineHeight: 1.8, maxWidth: 480 }}>
+            <p style={{ fontSize: "1.4rem", fontWeight:'700', color: "white", lineHeight: 1.8, maxWidth: 480 }}>
 Sell-side meets buy-side thinking.
             </p>
              <p style={{ fontSize: "1rem", color: "var(--muted)", lineHeight: 1.8, maxWidth: 480, marginBottom: "2.5rem" }}>

@@ -64,7 +64,7 @@ export const experience = [
     date: "Nov 2022 - May 2023",
     firm: "KPMG",
     title: "Associate Consultant",
-    location: "India",
+    location: "Banglore, India",
     desc: "Onboarded $28M worth US banking entity into Workday ERP. Institutionalised and optimised financial processes. Maintained 90%+ quality compliance for 50+ ERP project portfolios within the Quality Management System.",
     tags: ["Workday ERP", "QMS", "$28M Onboarding", "Banking"],
   },
@@ -72,7 +72,7 @@ export const experience = [
     date: "Sept 2020 - Oct 2022",
     firm: "Deloitte Consulting",
     title: "Analyst",
-    location: "India",
+    location: "Banglore, India",
     desc: "Wireframed ledger accounts with hierarchies and accounting details, transforming business event data. Reduced processing time by 70% by creating SQL scripts, digitising conversion while loading legacy data. Developed and customised balance sheet reports by analysing client legacy data. Hosted seminar for 200+ employees as lead speaker on Advanced Security in Workday Implementation.",
     tags: ["SQL", "Workday", "ERP", "70% Efficiency Gain"],
   },
@@ -129,7 +129,7 @@ export const skillGroups = [
       { name: "Bloomberg Terminal", pct: 88 },
       { name: "Workday ERP", pct: 92 },
       { name: "LSEG / Refinitiv", pct: 78 },
-      { name: "Capital Markets", pct: 85 },
+      { name: "Trading View", pct: 85 },
     ],
   },
   {
@@ -174,7 +174,7 @@ export const education: EducationItem[] = [
   {
     type: "Certification",
     degree: "NISM Research Analyst (Series XV)",
-    school: "NISM — 84/100 correct answers",
+    school: "NISM — 84/100",
     year: "2024",
   },
 ];
