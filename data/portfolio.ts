@@ -69,7 +69,7 @@ export const experience = [
     tags: ["Workday ERP", "QMS", "$28M Onboarding", "Banking"],
   },
   {
-    date: "Sept 2020-Oct 2022",
+    date: "Sept 2020 - Oct 2022",
     firm: "Deloitte Consulting",
     title: "Analyst",
     location: "India",

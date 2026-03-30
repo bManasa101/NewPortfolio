@@ -22,8 +22,11 @@ export default function Hero() {
               Turning Data<br />
               Into <em style={{ fontStyle: "normal", fontWeight: 700, color: "var(--gold)" }}>Conviction</em>
             </h1>
-            <p style={{ fontSize: "1rem", color: "var(--muted)", lineHeight: 1.8, maxWidth: 480, marginBottom: "2.5rem" }}>
-Sell-side meets buy-side thinking. I sit at the interface of institutional capital allocation and equity research — translating market signals into structured, high-conviction ideas.
+            <p style={{ fontSize: "1rem", fontWeight:'700', color: "var(--muted)", lineHeight: 1.8, maxWidth: 480 }}>
+Sell-side meets buy-side thinking.
+            </p>
+             <p style={{ fontSize: "1rem", color: "var(--muted)", lineHeight: 1.8, maxWidth: 480, marginBottom: "2.5rem" }}>
+I sit at the interface of institutional capital allocation and equity research — translating market signals into structured, high-conviction ideas.
             </p>
             <div className="flex gap-4 flex-wrap">
               <a href="#research" style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "var(--gold)", color: "#080a0f", padding: "0.75rem 2rem", borderRadius: 2, fontSize: "0.78rem", fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase" }}>
